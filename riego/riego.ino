@@ -1,6 +1,8 @@
+#include <LiquidCrystal.h>
+
 const int pinSensorHumedad = 0;
 const int pinBomba = 2;
-const int intervaloBombaFuncionando = 1000; // ms (3s)
+const int intervaloBombaFuncionando = 5000; // ms (3s)
 const double intervaloMuestreo = 120000; // ms (5m) 300000 por defecto
 const int umbralHumedad = 35; // % de humedad por debajo del cual se activará la bomba
 const int medidasATomar = 10;
@@ -11,14 +13,34 @@ int medidasTomadas = 0;
 int media = -1;
 float aaa = 0;
 
+// Pines lcd
+const int pinRs = 34;
+const int pinEnable = 35;
+const int pinD4 = 30;
+const int pinD5 = 31;
+const int pinD6 = 32;
+const int pinD7 = 33;
 
-void setup() {  
+//LiquidCrystal lcd(rs, enable, d4, d5, d6, d7)
+LiquidCrystal lcd(pinRs, pinEnable, pinD4,pinD5,pinD6,pinD7);
+
+void setup() {     
   Serial.begin(9600);
   pinMode(pinBomba, OUTPUT);
+  pinMode(pinRs, OUTPUT);
+  pinMode(pinEnable, OUTPUT);
+  pinMode(pinD4, OUTPUT);
+  pinMode(pinD5, OUTPUT);
+  pinMode(pinD6, OUTPUT);
+  pinMode(pinD7, OUTPUT);  
   digitalWrite(pinBomba, HIGH);
+  lcd.begin(16,2);
+  lcd.setCursor(0,0);
+  lcd.print("Iniciando...");
   delay(5000);
-    valorSensor = analogRead(pinSensorHumedad);
-
+  valorSensor = analogRead(pinSensorHumedad);
+  
+  
 }
 
 void loop() {     
@@ -29,6 +51,20 @@ void loop() {
   Serial.print("\t");
   Serial.print("% humedad: ");
   Serial.println(porcentajeHumedad);
+
+  // Escribo al LCD
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("H. actual:  ");
+  if(porcentajeHumedad > 0){
+    lcd.print(" ");
+  }
+  lcd.print(porcentajeHumedad);
+  lcd.print("%");
+  lcd.setCursor(0,1);
+  lcd.print("H. obj.:     ");
+  lcd.print(umbralHumedad);
+  lcd.print("%");
   
   if(medidasTomadas == 0){   
     media = porcentajeHumedad;
@@ -48,6 +84,9 @@ void loop() {
       Serial.println(" ");
       Serial.println("\t>>> Riego activado <<<");
       digitalWrite(pinBomba, LOW);
+      lcd.clear();
+      lcd.setCursor(0,0);     
+      lcd.print("Regando...");
       delay(intervaloBombaFuncionando);
       digitalWrite(pinBomba, HIGH);
     } else {
@@ -60,6 +99,10 @@ void loop() {
   } else {
       medidasTomadas++;  
   }
-
+  
   delay(intervaloMuestreo);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Midiendo... ");
+  delay(3000);
 }
