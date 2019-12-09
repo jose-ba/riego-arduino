@@ -89,6 +89,12 @@ void loop() {
       lcd.print("Regando...");
       delay(intervaloBombaFuncionando);
       digitalWrite(pinBomba, HIGH);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Se ha regado,");
+      lcd.setCursor(0, 1);
+      lcd.print("esperando 1h.");
+      delay(3600000);
     } else {
       digitalWrite(pinBomba, HIGH);
     }
