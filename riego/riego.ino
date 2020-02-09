@@ -3,15 +3,17 @@
 const int pinSensorHumedad = 0;
 const int pinBomba = 2;
 const int intervaloBombaFuncionando = 5000; // ms (3s)
-const double intervaloMuestreo = 120000; // ms (5m) 300000 por defecto
+const double intervaloMuestreo = 120000; //120000 // ms (5m) 300000 por defecto
 const int umbralHumedad = 50; // % de humedad por debajo del cual se activará la bomba
 const int medidasATomar = 10;
+const int esperaRiego = 7200000; //7200000
 int valorHumedad = 100; // Lo inicializo a 100% por defecto para que la bomba no funcione
 int porcentajeHumedad = 100;
 int valorSensor = 250;
 int medidasTomadas = 0;
 int media = -1;
 float aaa = 0;
+float sumaMedidas = 0;
 
 // Pines lcd
 const int pinRs = 34;
@@ -46,6 +48,7 @@ void setup() {
 void loop() {     
   valorSensor = analogRead(pinSensorHumedad);
   porcentajeHumedad = map(valorSensor, 590, 250, 0,100); // Los valores del sensor los he sacado haciendo Serial.printl del sensor directamente (590 = seco, 250 = en agua)
+  
   Serial.print("Sensor: ");
   Serial.print(valorSensor);
   Serial.print("\t");
@@ -66,15 +69,22 @@ void loop() {
   lcd.print(umbralHumedad);
   lcd.print("%");
   
-  if(medidasTomadas == 0){   
-    media = porcentajeHumedad;
+  if(sumaMedidas == 0){   
+    sumaMedidas = porcentajeHumedad;
   } else {
-    media += porcentajeHumedad;
+    sumaMedidas += porcentajeHumedad;
   }
+  medidasTomadas++;
 
-  if(medidasTomadas >= (medidasATomar-1)){    
+  /*Serial.print("Medidas tomadas ");
+  Serial.println(medidasTomadas);
+
+  Serial.print("Suma ");
+  Serial.println(sumaMedidas);*/
+
+  if(medidasTomadas >= (medidasATomar)){    
     Serial.println(" ");
-    aaa = (media/(medidasTomadas+1));
+    aaa = (sumaMedidas/medidasTomadas);
     medidasTomadas = 0;
     Serial.print("Media de las últimas ");
     Serial.print(medidasATomar);
@@ -93,17 +103,16 @@ void loop() {
       lcd.setCursor(0,0);
       lcd.print("Se ha regado,");
       lcd.setCursor(0, 1);
-      lcd.print("esperando 1h.");
-      delay(3600000);
+      lcd.print("esperando un rato.");
+      delay(esperaRiego);
     } else {
       digitalWrite(pinBomba, HIGH);
     }
+    sumaMedidas = 0;
     medidasTomadas =0;
     Serial.println(" ");
     Serial.println("--------------------------------");
     Serial.println(" ");
-  } else {
-      medidasTomadas++;  
   }
   
   delay(intervaloMuestreo);
