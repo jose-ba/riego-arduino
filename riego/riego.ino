@@ -1,4 +1,5 @@
 #include <LiquidCrystal.h>
+#include <math.h>
 
 const int pinSensorHumedad = 0;
 const int pinBomba = 2;
@@ -6,7 +7,7 @@ const int intervaloBombaFuncionando = 5000; // ms (3s)
 const double intervaloMuestreo = 120000; //120000 // ms (5m) 300000 por defecto
 const int umbralHumedad = 50; // % de humedad por debajo del cual se activará la bomba
 const int medidasATomar = 10;
-const int esperaRiego = 7200000; //7200000
+const double esperaRiego = 7200000; //7200000
 int valorHumedad = 100; // Lo inicializo a 100% por defecto para que la bomba no funcione
 int porcentajeHumedad = 100;
 int valorSensor = 250;
@@ -14,6 +15,7 @@ int medidasTomadas = 0;
 int media = -1;
 float aaa = 0;
 float sumaMedidas = 0;
+double esperaRestante;
 
 // Pines lcd
 const int pinRs = 34;
@@ -102,9 +104,14 @@ void loop() {
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Se ha regado,");
-      lcd.setCursor(0, 1);
-      lcd.print("esperando un rato.");
-      delay(esperaRiego);
+      esperaRestante = esperaRiego;
+      while(esperaRestante > 0){
+        lcd.setCursor(0, 1);
+        lcd.print("esperando ");
+        lcd.print(round(esperaRestante/1000));
+        delay(1000);
+        esperaRestante = esperaRestante - 1000;
+      }      
     } else {
       digitalWrite(pinBomba, HIGH);
     }
