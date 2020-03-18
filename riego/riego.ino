@@ -13,7 +13,7 @@ int porcentajeHumedad = 100;
 int valorSensor = 250;
 int medidasTomadas = 0;
 int media = -1;
-float aaa = 0;
+float aaa = 0; 
 float sumaMedidas = 0;
 double esperaRestante;
 
