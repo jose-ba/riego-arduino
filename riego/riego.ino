@@ -3,7 +3,7 @@
 
 const int pinSensorHumedad = 0;
 const int pinBomba = 2;
-const int intervaloBombaFuncionando = 5000; // ms (3s)
+const int intervaloBombaFuncionando = 2500; // ms (3s)
 const double intervaloMuestreo = 120000; //120000 // ms (5m) 300000 por defecto
 const int umbralHumedad = 40; // % de humedad por debajo del cual se activará la bomba
 const int medidasATomar = 10;
